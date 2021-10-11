@@ -1,23 +1,17 @@
-import logo from './logo.svg';
 import './App.css';
+import "@vonagevolta/volta2/dist/css/volta.min.css";
+import Video from './components/Video/Video';
+import Header from './components/Header/Header';
+import ToolBar from './components/ToolBar/ToolBar';
+
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Header/>
+      <Video />
+      <ToolBar/>
+      
     </div>
   );
 }
