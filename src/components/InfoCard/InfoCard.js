@@ -24,6 +24,7 @@ export default function InfoCard({
   protocol,
   srtpCipher,
   hasVPN,
+  simulcastLayers,
 }) {
   const [ipData, setIpData] = useState(null);
 
@@ -37,11 +38,15 @@ export default function InfoCard({
   //     });
   // }, [ip]);
 
+  useEffect(() => {
+    console.log(simulcastLayers);
+  }, [simulcastLayers]);
+
   const classes = styles();
   return (
-    <Card sx={{ maxHeight: 150 }}>
+    <Card sx={{ maxHeight: 250 }}>
       <CardContent className={classes.root} component="div">
-        {ipData && (
+        {/* {ipData && (
           <Typography
             sx={{ fontSize: 14 }}
             component="div"
@@ -51,7 +56,7 @@ export default function InfoCard({
             {ip.type === 'direct' && `Media Server IP: ${ip.ip}`}
             {ip.type === 'relay' && `Media Relayed through ${ipData}`}
           </Typography>
-        )}
+        )} */}
         <Typography
           sx={{ fontSize: 14 }}
           component="div"
@@ -86,6 +91,24 @@ export default function InfoCard({
             VPN : {hasVPN ? 'Yes' : 'No'}
           </Typography>
         )}
+        {simulcastLayers &&
+          simulcastLayers.map((e) => (
+            <Typography
+              sx={{ fontSize: 14 }}
+              component="div"
+              color="text.secondary"
+              gutterBottom
+            >
+              Resolution : {`${e.width}x${e.height}`}
+            </Typography>
+          ))}
+        {/* {simulcastLayers && simulcastLayers.map(e => (
+        <Typography sx={{ fontSize: 14 }}
+            component="div"
+            color="text.secondary"
+            gutterBottom>{e.frameWidth}
+            </Typography>
+        } */}
       </CardContent>
     </Card>
   );

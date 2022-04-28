@@ -24,6 +24,7 @@ const Video = () => {
     protocol,
     srtpCipher,
     hasVPN,
+    simulcastLayers,
   } = usePublisher();
 
   useEffect(() => {
@@ -61,6 +62,7 @@ const Video = () => {
             ip={ip}
             connectionType={connectionType}
             hasVPN={hasVPN}
+            simulcastLayers={simulcastLayers}
           />
         )}
       </div>

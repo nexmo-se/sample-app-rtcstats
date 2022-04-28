@@ -16,6 +16,10 @@ export function usePublisher() {
     useState(null);
   const [successfulRemoteCandidate, setSuccessfulRemoteCandidate] =
     useState(null);
+  let prevTimeStamp = {};
+  let prevFrames = {};
+
+  const [simulcastLayers, setSimulcastLayers] = useState([]);
 
   const streamCreatedListener = React.useCallback(({ stream }) => {
     console.log(stream);
@@ -41,6 +45,7 @@ export function usePublisher() {
       const finalPublisherOptions = Object.assign({}, publisherOptions, {
         insertMode: 'append',
         width: 680,
+        resolution: '1280x720',
         height: 640,
         style: {
           buttonDisplayMode: 'off',
@@ -74,9 +79,12 @@ export function usePublisher() {
       console.log(publisherRef.current);
       try {
         const stats = await publisherRef.current.getRtcStatsReport();
+        console.log(stats);
         setStats(stats);
+        setSimulcastLayers([]);
         stats[0].rtcStatsReport.forEach((e) => {
           if (e.type === 'candidate-pair') {
+            console.log(e);
             if (e.state === 'succeeded') {
               setSuccessfulLocalCandidate(e.localCandidateId);
               setSuccessfulRemoteCandidate(e.remoteCandidateId);
@@ -93,6 +101,7 @@ export function usePublisher() {
           if (e.type === 'local-candidate') {
             if (e.networkType === 'vpn') setHasVPN(true);
             if (successfulLocalCandidate === e.id) {
+              console.log(e.networkType);
               // if (successfulLocalCandidate === e.id) {
               setConnectionType(e.networkType);
               if (e.candidateType === 'relay') {
@@ -107,6 +116,28 @@ export function usePublisher() {
 
           if (e.type === 'transport') {
             setSrtpCipher(e.srtpCipher);
+          }
+
+          if (
+            e.type === 'outbound-rtp' &&
+            e.kind === 'video' &&
+            e.frameHeight &&
+            e.frameWidth
+          ) {
+            // if (prevTimeStamp[e.ssrc] !== undefined) {
+            console.log(e);
+            const newLayers = {
+              width: e.frameWidth,
+              height: e.frameHeight,
+            };
+            // if (e.frameHeight && e.frameWidth) {
+            setSimulcastLayers((simulcastLayers) => [
+              ...simulcastLayers,
+              newLayers,
+            ]);
+            // }
+            // }
+            // prevTimeStamp[e.ssrc] = e.timestamp;
           }
         });
 
@@ -152,7 +183,11 @@ export function usePublisher() {
   );
 
   useEffect(() => {
-    getStats();
+    if (isPublishing) {
+      setInterval(() => {
+        getStats();
+      }, 3000);
+    }
   }, [
     getStats,
     isPublishing,
@@ -183,5 +218,6 @@ export function usePublisher() {
     connectionType,
     srtpCipher,
     hasVPN,
+    simulcastLayers,
   };
 }
