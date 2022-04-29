@@ -55,13 +55,13 @@ const Video = () => {
         className={classes.streams}
         ref={videoContainer}
       >
-        {ip && connectionType && (
+        {connectionType && protocol && (
           <InfoCard
             srtpCipher={srtpCipher}
             protocol={protocol}
             ip={ip}
             connectionType={connectionType}
-            hasVPN={hasVPN}
+            // hasVPN={hasVPN}
             simulcastLayers={simulcastLayers}
           />
         )}

@@ -26,8 +26,6 @@ export default function InfoCard({
   hasVPN,
   simulcastLayers,
 }) {
-  const [ipData, setIpData] = useState(null);
-
   // useEffect(() => {
   //   reverseLookup(ip.ip)
   //     .then(({ data }) => {
@@ -38,25 +36,10 @@ export default function InfoCard({
   //     });
   // }, [ip]);
 
-  useEffect(() => {
-    console.log(simulcastLayers);
-  }, [simulcastLayers]);
-
   const classes = styles();
   return (
-    <Card sx={{ maxHeight: 250 }}>
+    <Card sx={{ maxHeight: 350 }}>
       <CardContent className={classes.root} component="div">
-        {/* {ipData && (
-          <Typography
-            sx={{ fontSize: 14 }}
-            component="div"
-            color="text.secondary"
-            gutterBottom
-          >
-            {ip.type === 'direct' && `Media Server IP: ${ip.ip}`}
-            {ip.type === 'relay' && `Media Relayed through ${ipData}`}
-          </Typography>
-        )} */}
         <Typography
           sx={{ fontSize: 14 }}
           component="div"
@@ -73,14 +56,28 @@ export default function InfoCard({
         >
           Protocol : {protocol.toUpperCase()}
         </Typography>
+
+        {/* {ipData && (
+          <Typography
+            sx={{ fontSize: 14 }}
+            component="div"
+            color="text.secondary"
+            gutterBottom
+          >
+            {ip.type === 'direct' && `Media Server IP: ${ip.ip}`}
+            {ip.type === 'relay' && `Media Relayed through ${ipData}`}
+          </Typography>
+        )} */}
+        {/*
         <Typography
           sx={{ fontSize: 14 }}
           component="div"
           color="text.secondary"
           gutterBottom
         >
-          SRTP Cipher : {srtpCipher}
+          Protocol : {protocol.toUpperCase()}
         </Typography>
+        
         {hasVPN && (
           <Typography
             sx={{ fontSize: 14 }}
@@ -89,17 +86,31 @@ export default function InfoCard({
             gutterBottom
           >
             VPN : {hasVPN ? 'Yes' : 'No'}
-          </Typography>
-        )}
+          </Typography> */}
+        {/* )} */}
+        <Typography
+          sx={{ fontSize: 14 }}
+          component="div"
+          color="text.secondary"
+          gutterBottom
+        >
+          SRTP Cipher : {srtpCipher}
+        </Typography>
         {simulcastLayers &&
-          simulcastLayers.map((e) => (
+          simulcastLayers.map((e, index) => (
             <Typography
+              key={index}
               sx={{ fontSize: 14 }}
               component="div"
               color="text.secondary"
               gutterBottom
             >
-              Resolution : {`${e.width}x${e.height}`}
+              <ul>
+                <li>Resolution : {`${e.width}x${e.height}`}</li>
+                <li>Quality limitation : {e.qualityLimitationReason}</li>
+                <li>FPS: {e.framesPerSecond}</li>
+                <li>Kbps: {Math.round(e.bytes)}</li>
+              </ul>
             </Typography>
           ))}
         {/* {simulcastLayers && simulcastLayers.map(e => (

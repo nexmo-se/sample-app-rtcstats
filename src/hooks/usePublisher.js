@@ -16,8 +16,9 @@ export function usePublisher() {
     useState(null);
   const [successfulRemoteCandidate, setSuccessfulRemoteCandidate] =
     useState(null);
-  let prevTimeStamp = {};
-  let prevFrames = {};
+  let prevTimeStamp = useRef({});
+
+  let prevBytesSent = useRef({});
 
   const [simulcastLayers, setSimulcastLayers] = useState([]);
 
@@ -45,7 +46,7 @@ export function usePublisher() {
       const finalPublisherOptions = Object.assign({}, publisherOptions, {
         insertMode: 'append',
         width: 680,
-        resolution: '1280x720',
+        // resolution: '1280x720',
         height: 640,
         style: {
           buttonDisplayMode: 'off',
@@ -76,42 +77,39 @@ export function usePublisher() {
 
   const getStats = useCallback(async () => {
     if (publisherRef.current) {
-      console.log(publisherRef.current);
       try {
         const stats = await publisherRef.current.getRtcStatsReport();
-        console.log(stats);
+
         setStats(stats);
         setSimulcastLayers([]);
         stats[0].rtcStatsReport.forEach((e) => {
-          if (e.type === 'candidate-pair') {
-            console.log(e);
-            if (e.state === 'succeeded') {
-              setSuccessfulLocalCandidate(e.localCandidateId);
-              setSuccessfulRemoteCandidate(e.remoteCandidateId);
-            }
-          }
-          if (
-            e.type === 'remote-candidate' &&
-            successfulRemoteCandidate === e.id
-          ) {
-            // if (successfulRemoteCandidate === e.id) {
-            setIp({ ip: e.ip, type: 'direct' });
-            // }
-          }
+          // if (e.type === 'candidate-pair') {
+          //   if (e.state === 'succeeded') {
+          //     setSuccessfulLocalCandidate(e.localCandidateId);
+          //     setSuccessfulRemoteCandidate(e.remoteCandidateId);
+          //   }
+          // }
+          // if (
+          //   e.type === 'remote-candidate' &&
+          //   successfulRemoteCandidate === e.id
+          // ) {
+          //   // if (successfulRemoteCandidate === e.id) {
+          //   setIp({ ip: e.ip, type: 'direct' });
+          //   // }
+          // }
           if (e.type === 'local-candidate') {
             if (e.networkType === 'vpn') setHasVPN(true);
-            if (successfulLocalCandidate === e.id) {
-              console.log(e.networkType);
-              // if (successfulLocalCandidate === e.id) {
-              setConnectionType(e.networkType);
-              if (e.candidateType === 'relay') {
-                setProtocol(`TURN ${e.relayProtocol}`);
-                setIp({ ip: e.ip, type: 'relay' });
-              } else {
-                setProtocol(e.protocol);
-              }
-              // }
+            // if (successfulLocalCandidate === e.id) {
+            // if (successfulLocalCandidate === e.id) {
+            setConnectionType(e.networkType);
+            if (e.candidateType === 'relay') {
+              setProtocol(`TURN ${e.relayProtocol}`);
+              setIp({ ip: e.ip, type: 'relay' });
+            } else {
+              setProtocol(e.protocol);
             }
+            // }
+            // }
           }
 
           if (e.type === 'transport') {
@@ -122,23 +120,46 @@ export function usePublisher() {
             e.type === 'outbound-rtp' &&
             e.kind === 'video' &&
             e.frameHeight &&
-            e.frameWidth
+            e.frameWidth &&
+            e.bytesSent
           ) {
-            // if (prevTimeStamp[e.ssrc] !== undefined) {
-            console.log(e);
-            const newLayers = {
-              width: e.frameWidth,
-              height: e.frameHeight,
-            };
-            // if (e.frameHeight && e.frameWidth) {
-            setSimulcastLayers((simulcastLayers) => [
-              ...simulcastLayers,
-              newLayers,
-            ]);
-            // }
-            // }
-            // prevTimeStamp[e.ssrc] = e.timestamp;
+            console.log(prevBytesSent.current[e.ssrc]);
+            // console.log(prevTimeStamp.current[e.ssrc]);
+            // console.log(e.timestamp - prevTimeStamp.current[e.ssrc]);
+            // console.log(prevTimeStamp);
+            if (
+              prevTimeStamp.current[e.ssrc] &&
+              prevBytesSent.current[e.ssrc]
+            ) {
+              const timedif = e.timestamp - prevTimeStamp.current[e.ssrc];
+              const bytesDif = e.bytesSent - prevBytesSent.current[e.ssrc];
+              const bitSec = (8 * bytesDif) / timedif;
+              // / timedif;
+              console.log(bitSec);
+              // console.log(`(${8} * ${bytesDif}) / ${timedif}`);
+
+              // console.log(e.timestamp);
+              const newLayers = {
+                width: e.frameWidth,
+                height: e.frameHeight,
+                framesPerSecond: e.framesPerSecond,
+                qualityLimitationReason: e.qualityLimitationReason,
+                id: e.ssrc,
+                bytes: bitSec,
+              };
+
+              // if (e.frameHeight && e.frameWidth) {
+              setSimulcastLayers((simulcastLayers) => [
+                ...simulcastLayers,
+                newLayers,
+              ]);
+            }
+            prevTimeStamp.current[e.ssrc] = e.timestamp;
+            prevBytesSent.current[e.ssrc] = e.bytesSent;
           }
+
+          // prevTimeStamp[e.ssrc] = e.timestamp;
+          // }
         });
 
         /* setIsScreenSharing(true); */
@@ -146,7 +167,7 @@ export function usePublisher() {
         console.log('[useRtcStats] -  error:', e);
       }
     }
-  }, [successfulLocalCandidate, successfulRemoteCandidate]);
+  }, []);
 
   const destroyPublisher = useCallback(() => {
     if (!publisherRef.current) {
@@ -188,12 +209,7 @@ export function usePublisher() {
         getStats();
       }, 3000);
     }
-  }, [
-    getStats,
-    isPublishing,
-    successfulLocalCandidate,
-    successfulRemoteCandidate,
-  ]);
+  }, [getStats, isPublishing]);
 
   const unpublish = useCallback(
     ({ session }) => {
