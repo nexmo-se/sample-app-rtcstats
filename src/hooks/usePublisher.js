@@ -19,6 +19,9 @@ export function usePublisher() {
   let prevTimeStamp = useRef({});
 
   let prevBytesSent = useRef({});
+  const [jitterAudio, setJitterAudio] = useState(null);
+  const [jitterVideo, setJitterVideo] = useState(null);
+  const [rtt, setRtt] = useState(null);
 
   const [simulcastLayers, setSimulcastLayers] = useState([]);
 
@@ -83,6 +86,8 @@ export function usePublisher() {
         setStats(stats);
         setSimulcastLayers([]);
         stats[0].rtcStatsReport.forEach((e) => {
+          //if I uncomment the first if statement and I add the successfulRmote and successfuLocal to
+          //the array of dependencies, there will be a problem with renders
           // if (e.type === 'candidate-pair') {
           //   if (e.state === 'succeeded') {
           //     setSuccessfulLocalCandidate(e.localCandidateId);
@@ -114,6 +119,15 @@ export function usePublisher() {
 
           if (e.type === 'transport') {
             setSrtpCipher(e.srtpCipher);
+          }
+          if (e.type === 'remote-inbound-rtp' && e.kind === 'video') {
+            setJitterVideo(e.jitter);
+            const rtt = !isNaN(e.roundTripTime) ? e.roundTripTime : 0;
+            setRtt(rtt);
+          }
+          if (e.type === 'remote-inbound-rtp' && e.kind === 'audio') {
+            console.log(e.jitter);
+            setJitterAudio(e.jitter);
           }
 
           if (
@@ -235,5 +249,8 @@ export function usePublisher() {
     srtpCipher,
     hasVPN,
     simulcastLayers,
+    jitterVideo,
+    jitterAudio,
+    rtt,
   };
 }

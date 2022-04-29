@@ -7,11 +7,13 @@ export function useSession({ container }) {
   const sessionRef = useRef(null);
 
   const addStream = ({ stream }) => {
-    setStreams(prev => [...prev, stream]);
+    setStreams((prev) => [...prev, stream]);
   };
 
   const removeStream = ({ stream }) => {
-    setStreams(prev => prev.filter(prevStream => prevStream.id !== stream.id));
+    setStreams((prev) =>
+      prev.filter((prevStream) => prevStream.id !== stream.id)
+    );
   };
 
   const subscribe = React.useCallback(
@@ -23,9 +25,9 @@ export function useSession({ container }) {
           height: '100%',
           style: {
             buttonDisplayMode: 'off',
-            nameDisplayMode: 'on'
+            nameDisplayMode: 'on',
           },
-          showControls: false
+          showControls: false,
         });
         const subscriber = sessionRef.current.subscribe(
           stream,
@@ -38,14 +40,14 @@ export function useSession({ container }) {
   );
 
   const onStreamCreated = useCallback(
-    event => {
+    (event) => {
       subscribe(event.stream);
       addStream({ stream: event.stream });
     },
     [subscribe]
   );
 
-  const onStreamDestroyed = useCallback(event => {
+  const onStreamDestroyed = useCallback((event) => {
     removeStream({ stream: event.stream });
   }, []);
 
@@ -69,18 +71,18 @@ export function useSession({ container }) {
         //   transportPolicy: 'relay',
         //   customServers: [
         //     {
-        //       urls: []
-        //     }
-        //   ]
-        // }
+        //       urls: [],
+        //     },
+        //   ],
+        // },
       });
       const eventHandlers = {
         streamCreated: onStreamCreated,
-        streamDestroyed: onStreamDestroyed
+        streamDestroyed: onStreamDestroyed,
       };
       sessionRef.current.on(eventHandlers);
       return new Promise((resolve, reject) => {
-        sessionRef.current.connect(token, err => {
+        sessionRef.current.connect(token, (err) => {
           if (!sessionRef.current) {
             // Either this session has been disconnected or OTSession
             // has been unmounted so don't invoke any callbacks
@@ -113,6 +115,6 @@ export function useSession({ container }) {
     connected,
     createSession,
     destroySession,
-    streams
+    streams,
   };
 }

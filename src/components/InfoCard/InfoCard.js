@@ -25,6 +25,9 @@ export default function InfoCard({
   srtpCipher,
   hasVPN,
   simulcastLayers,
+  jitterAudio,
+  jitterVideo,
+  rtt,
 }) {
   // useEffect(() => {
   //   reverseLookup(ip.ip)
@@ -55,6 +58,30 @@ export default function InfoCard({
           gutterBottom
         >
           Protocol : {protocol.toUpperCase()}
+        </Typography>
+        <Typography
+          sx={{ fontSize: 14 }}
+          component="div"
+          color="text.secondary"
+          gutterBottom
+        >
+          Jitter Audio : {jitterAudio}
+        </Typography>
+        <Typography
+          sx={{ fontSize: 14 }}
+          component="div"
+          color="text.secondary"
+          gutterBottom
+        >
+          Round trip time : {rtt}
+        </Typography>
+        <Typography
+          sx={{ fontSize: 14 }}
+          component="div"
+          color="text.secondary"
+          gutterBottom
+        >
+          Jitter Video : {jitterVideo}
         </Typography>
 
         {/* {ipData && (
