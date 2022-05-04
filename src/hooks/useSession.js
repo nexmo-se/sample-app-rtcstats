@@ -5,10 +5,15 @@ export function useSession({ container }) {
   const [connected, setConnected] = useState(false);
   const [streams, setStreams] = useState([]);
   const sessionRef = useRef(null);
-
+  const [subscriber, setSubscriber] = useState(null);
   const addStream = ({ stream }) => {
     setStreams((prev) => [...prev, stream]);
   };
+  const [bytesReceived, setBytesReceived] = useState(null);
+  let prevTimeStamp = useRef(null);
+  let prevBytes = useRef(null);
+  const [subscriberFps, setSubscriberFps] = useState(null);
+  const [subscriberRes, setSubscriberRes] = useState(null);
 
   const removeStream = ({ stream }) => {
     setStreams((prev) =>
@@ -34,6 +39,7 @@ export function useSession({ container }) {
           container.current.id,
           finalOptions
         );
+        setSubscriber(subscriber);
       }
     },
     [container]
@@ -50,6 +56,52 @@ export function useSession({ container }) {
   const onStreamDestroyed = useCallback((event) => {
     removeStream({ stream: event.stream });
   }, []);
+
+  const getStats = useCallback(async () => {
+    if (subscriber) {
+      try {
+        const stats = await subscriber.getRtcStatsReport();
+        console.log(stats);
+
+        // setStats(stats);
+
+        stats.forEach((e) => {
+          if (
+            e.type === 'inbound-rtp' &&
+            e.kind === 'video'
+            //  &&
+            // prevTimeStamp.current &&
+            // prevBytes.current
+          ) {
+            setSubscriberFps(e.framesPerSecond);
+            setSubscriberRes(`${e.frameWidth}X${e.frameHeight}`);
+            if (prevTimeStamp.current && prevBytes.current) {
+              const timeDiff = e.timestamp - prevTimeStamp.current;
+              const bytesDiff = e.bytesReceived - prevBytes.current;
+              const bitSec = (8 * bytesDiff) / timeDiff;
+              setBytesReceived(bitSec);
+            }
+            prevTimeStamp.current = e.timestamp;
+            prevBytes.current = e.bytesReceived;
+            // console.log(bitSec);
+          }
+        });
+      } catch (e) {
+        console.log('[useRtcStats] -  error:', e);
+      }
+    }
+  }, [subscriber]);
+
+  React.useEffect(() => {
+    console.log('useEffect hook ran');
+    if (subscriber) {
+      setInterval(() => {
+        getStats();
+      }, 3000);
+    } else {
+      console.log(`useEffecthook -  no subscriber ${subscriber}`);
+    }
+  }, [subscriber, getStats]);
 
   const createSession = useCallback(
     ({ apiKey, sessionId, token }) => {
@@ -116,5 +168,8 @@ export function useSession({ container }) {
     createSession,
     destroySession,
     streams,
+    bytesReceived,
+    subscriberFps,
+    subscriberRes,
   };
 }

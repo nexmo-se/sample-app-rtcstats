@@ -22,6 +22,7 @@ export function usePublisher() {
   const [jitterAudio, setJitterAudio] = useState(null);
   const [jitterVideo, setJitterVideo] = useState(null);
   const [rtt, setRtt] = useState(null);
+  const [audioPacketsLost, setAudioPacketsLost] = useState(null);
 
   const [simulcastLayers, setSimulcastLayers] = useState([]);
 
@@ -125,9 +126,15 @@ export function usePublisher() {
             const rtt = !isNaN(e.roundTripTime) ? e.roundTripTime : 0;
             setRtt(rtt);
           }
+          if (e.type === 'inbound-rtp' && e.kind === 'video') {
+            setJitterVideo(e.jitter);
+            const rtt = !isNaN(e.roundTripTime) ? e.roundTripTime : 0;
+            setRtt(rtt);
+          }
           if (e.type === 'remote-inbound-rtp' && e.kind === 'audio') {
             console.log(e.jitter);
             setJitterAudio(e.jitter);
+            setAudioPacketsLost(e.fractionLost);
           }
 
           if (
@@ -137,7 +144,7 @@ export function usePublisher() {
             e.frameWidth &&
             e.bytesSent
           ) {
-            console.log(prevBytesSent.current[e.ssrc]);
+            // console.log(prevBytesSent.current[e.ssrc]);
             // console.log(prevTimeStamp.current[e.ssrc]);
             // console.log(e.timestamp - prevTimeStamp.current[e.ssrc]);
             // console.log(prevTimeStamp);
@@ -149,7 +156,7 @@ export function usePublisher() {
               const bytesDif = e.bytesSent - prevBytesSent.current[e.ssrc];
               const bitSec = (8 * bytesDif) / timedif;
               // / timedif;
-              console.log(bitSec);
+              // console.log(bitSec);
               // console.log(`(${8} * ${bytesDif}) / ${timedif}`);
 
               // console.log(e.timestamp);
@@ -252,5 +259,6 @@ export function usePublisher() {
     jitterVideo,
     jitterAudio,
     rtt,
+    audioPacketsLost,
   };
 }

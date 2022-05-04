@@ -11,7 +11,14 @@ import { Button } from '@material-ui/core';
 const Video = () => {
   const classes = styles();
   const videoContainer = useRef();
-  const { session, createSession, connected } = useSession({
+  const {
+    session,
+    createSession,
+    connected,
+    bytesReceived,
+    subscriberFps,
+    subscriberRes,
+  } = useSession({
     container: videoContainer,
   });
 
@@ -28,6 +35,7 @@ const Video = () => {
     jitterAudio,
     jitterVideo,
     rtt,
+    audioPacketsLost,
   } = usePublisher();
 
   useEffect(() => {
@@ -69,6 +77,10 @@ const Video = () => {
             jitterAudio={jitterAudio}
             jitterVideo={jitterVideo}
             rtt={rtt}
+            audioPacketsLost={audioPacketsLost}
+            bytesReceived={bytesReceived}
+            subscriberFps={subscriberFps}
+            subscriberRes={subscriberRes}
           />
         )}
       </div>

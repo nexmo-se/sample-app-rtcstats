@@ -28,6 +28,10 @@ export default function InfoCard({
   jitterAudio,
   jitterVideo,
   rtt,
+  audioPacketsLost,
+  bytesReceived,
+  subscriberRes,
+  subscriberFps,
 }) {
   // useEffect(() => {
   //   reverseLookup(ip.ip)
@@ -41,7 +45,7 @@ export default function InfoCard({
 
   const classes = styles();
   return (
-    <Card sx={{ maxHeight: 350 }}>
+    <Card sx={{ maxHeight: 750 }}>
       <CardContent className={classes.root} component="div">
         <Typography
           sx={{ fontSize: 14 }}
@@ -73,6 +77,14 @@ export default function InfoCard({
           color="text.secondary"
           gutterBottom
         >
+          Audio Packet Lost : {`${audioPacketsLost * 100} %`}
+        </Typography>
+        <Typography
+          sx={{ fontSize: 14 }}
+          component="div"
+          color="text.secondary"
+          gutterBottom
+        >
           Round trip time : {rtt}
         </Typography>
         <Typography
@@ -83,7 +95,6 @@ export default function InfoCard({
         >
           Jitter Video : {jitterVideo}
         </Typography>
-
         {/* {ipData && (
           <Typography
             sx={{ fontSize: 14 }}
@@ -115,14 +126,45 @@ export default function InfoCard({
             VPN : {hasVPN ? 'Yes' : 'No'}
           </Typography> */}
         {/* )} */}
-        <Typography
+        {/* <Typography
           sx={{ fontSize: 14 }}
           component="div"
           color="text.secondary"
           gutterBottom
         >
           SRTP Cipher : {srtpCipher}
-        </Typography>
+        </Typography> */}
+        {subscriberFps && (
+          <Typography
+            sx={{ fontSize: 14 }}
+            component="div"
+            color="text.secondary"
+            gutterBottom
+          >
+            Subscriber FPS : {subscriberFps}
+          </Typography>
+        )}
+        {subscriberRes && (
+          <Typography
+            sx={{ fontSize: 14 }}
+            component="div"
+            color="text.secondary"
+            gutterBottom
+          >
+            Subscriber Resolution : {subscriberRes}
+          </Typography>
+        )}
+
+        {bytesReceived && (
+          <Typography
+            sx={{ fontSize: 14 }}
+            component="div"
+            color="text.secondary"
+            gutterBottom
+          >
+            Download BW (Kbps) : {bytesReceived}
+          </Typography>
+        )}
         {simulcastLayers &&
           simulcastLayers.map((e, index) => (
             <Typography
@@ -136,7 +178,7 @@ export default function InfoCard({
                 <li>Resolution : {`${e.width}x${e.height}`}</li>
                 <li>Quality limitation : {e.qualityLimitationReason}</li>
                 <li>FPS: {e.framesPerSecond}</li>
-                <li>Kbps: {Math.round(e.bytes)}</li>
+                <li>Bitrate Kbps: {Math.round(e.bytes)}</li>
               </ul>
             </Typography>
           ))}
