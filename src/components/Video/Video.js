@@ -5,8 +5,6 @@ import { apiKey, token, sessionId } from '../../config';
 import { usePublisher } from '../../hooks/usePublisher';
 import { useSession } from '../../hooks/useSession';
 import InfoCard from '../InfoCard/InfoCard';
-import LoadingPage from '../LoadingPage';
-import { Button } from '@material-ui/core';
 
 const Video = () => {
   const classes = styles();
@@ -18,24 +16,24 @@ const Video = () => {
     bytesReceived,
     subscriberFps,
     subscriberRes,
+    haveSubscriberStats,
   } = useSession({
     container: videoContainer,
   });
 
   const {
-    publisher,
     publish,
     pubInitialised,
     ip,
     connectionType,
     protocol,
     srtpCipher,
-    hasVPN,
     simulcastLayers,
     jitterAudio,
     jitterVideo,
     rtt,
     audioPacketsLost,
+    simulcastDef,
   } = usePublisher();
 
   useEffect(() => {
@@ -60,12 +58,13 @@ const Video = () => {
   }, [publish, session, connected, pubInitialised]);
 
   return (
-    <>
+    <div className="main">
       <div
         id="video-container"
         className={classes.streams}
         ref={videoContainer}
-      >
+      ></div>
+      <div id="infoCard" className={classes.infoCard}>
         {connectionType && protocol && (
           <InfoCard
             srtpCipher={srtpCipher}
@@ -81,12 +80,12 @@ const Video = () => {
             bytesReceived={bytesReceived}
             subscriberFps={subscriberFps}
             subscriberRes={subscriberRes}
+            simulcastDef={simulcastDef}
+            haveSubscriberStats={haveSubscriberStats}
           />
         )}
       </div>
-
-      {/* <LoadingPage/> */}
-    </>
+    </div>
   );
 };
 

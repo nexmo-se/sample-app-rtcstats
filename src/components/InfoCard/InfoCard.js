@@ -5,6 +5,8 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+
 import styles from './styles';
 import { useEffect, useState } from 'react';
 import { getIpInfo, reverseLookup } from '../../api/ipData';
@@ -32,21 +34,21 @@ export default function InfoCard({
   bytesReceived,
   subscriberRes,
   subscriberFps,
+  simulcastDef,
+  haveSubscriberStats,
 }) {
-  // useEffect(() => {
-  //   reverseLookup(ip.ip)
-  //     .then(({ data }) => {
-  //       setIpData(data.regionName);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // }, [ip]);
-
   const classes = styles();
   return (
     <Card sx={{ maxHeight: 750 }}>
       <CardContent className={classes.root} component="div">
+        <Typography
+          sx={{ fontSize: 18 }}
+          component="h1"
+          color="text.primary"
+          gutterBottom
+        >
+          Publisher stats
+        </Typography>
         <Typography
           sx={{ fontSize: 14 }}
           component="div"
@@ -69,7 +71,7 @@ export default function InfoCard({
           color="text.secondary"
           gutterBottom
         >
-          Jitter Audio : {jitterAudio}
+          Jitter Audio : {jitterAudio?.toFixed(4)}
         </Typography>
         <Typography
           sx={{ fontSize: 14 }}
@@ -78,22 +80,6 @@ export default function InfoCard({
           gutterBottom
         >
           Audio Packet Lost : {`${audioPacketsLost * 100} %`}
-        </Typography>
-        <Typography
-          sx={{ fontSize: 14 }}
-          component="div"
-          color="text.secondary"
-          gutterBottom
-        >
-          Round trip time : {rtt}
-        </Typography>
-        <Typography
-          sx={{ fontSize: 14 }}
-          component="div"
-          color="text.secondary"
-          gutterBottom
-        >
-          Jitter Video : {jitterVideo}
         </Typography>
         {/* {ipData && (
           <Typography
@@ -134,37 +120,6 @@ export default function InfoCard({
         >
           SRTP Cipher : {srtpCipher}
         </Typography> */}
-        {subscriberFps && (
-          <Typography
-            sx={{ fontSize: 14 }}
-            component="div"
-            color="text.secondary"
-            gutterBottom
-          >
-            Subscriber FPS : {subscriberFps}
-          </Typography>
-        )}
-        {subscriberRes && (
-          <Typography
-            sx={{ fontSize: 14 }}
-            component="div"
-            color="text.secondary"
-            gutterBottom
-          >
-            Subscriber Resolution : {subscriberRes}
-          </Typography>
-        )}
-
-        {bytesReceived && (
-          <Typography
-            sx={{ fontSize: 14 }}
-            component="div"
-            color="text.secondary"
-            gutterBottom
-          >
-            Download BW (Kbps) : {bytesReceived}
-          </Typography>
-        )}
         {simulcastLayers &&
           simulcastLayers.map((e, index) => (
             <Typography
@@ -174,21 +129,59 @@ export default function InfoCard({
               color="text.secondary"
               gutterBottom
             >
+              Simulcast Layer
               <ul>
                 <li>Resolution : {`${e.width}x${e.height}`}</li>
                 <li>Quality limitation : {e.qualityLimitationReason}</li>
                 <li>FPS: {e.framesPerSecond}</li>
                 <li>Bitrate Kbps: {Math.round(e.bytes)}</li>
+                <li>Packet Lost (%): {e.packetLost}</li>
+                <li>Rtt: {e.rtt}</li>
+                <li>Jitter: {e.jitter?.toFixed(4)}</li>
               </ul>
+              <Divider />
             </Typography>
           ))}
-        {/* {simulcastLayers && simulcastLayers.map(e => (
-        <Typography sx={{ fontSize: 14 }}
+        {haveSubscriberStats && (
+          <Typography
+            sx={{ fontSize: 18 }}
+            component="h1"
+            color="text.primary"
+            gutterBottom
+          >
+            Subscriber stats
+          </Typography>
+        )}
+        {subscriberFps && haveSubscriberStats && (
+          <Typography
+            sx={{ fontSize: 14 }}
             component="div"
             color="text.secondary"
-            gutterBottom>{e.frameWidth}
-            </Typography>
-        } */}
+            gutterBottom
+          >
+            Subscriber FPS : {subscriberFps}
+          </Typography>
+        )}
+        {subscriberRes && haveSubscriberStats && (
+          <Typography
+            sx={{ fontSize: 14 }}
+            component="div"
+            color="text.secondary"
+            gutterBottom
+          >
+            Subscriber Resolution : {subscriberRes}
+          </Typography>
+        )}
+        {bytesReceived && haveSubscriberStats && (
+          <Typography
+            sx={{ fontSize: 14 }}
+            component="div"
+            color="text.secondary"
+            gutterBottom
+          >
+            Download BW (Kbps) : {bytesReceived}
+          </Typography>
+        )}
       </CardContent>
     </Card>
   );

@@ -9,20 +9,16 @@ export function usePublisher() {
   const [ip, setIp] = useState(null);
   const [hasVPN, setHasVPN] = useState(null);
   const [connectionType, setConnectionType] = useState(null);
-  const [stats, setStats] = useState(null);
   const [protocol, setProtocol] = useState(null);
   const [srtpCipher, setSrtpCipher] = useState(null);
-  const [successfulLocalCandidate, setSuccessfulLocalCandidate] =
-    useState(null);
-  const [successfulRemoteCandidate, setSuccessfulRemoteCandidate] =
-    useState(null);
   let prevTimeStamp = useRef({});
 
   let prevBytesSent = useRef({});
   const [jitterAudio, setJitterAudio] = useState(null);
   const [jitterVideo, setJitterVideo] = useState(null);
-  const [rtt, setRtt] = useState(null);
+  const [rtt, setRtt] = useState([]);
   const [audioPacketsLost, setAudioPacketsLost] = useState(null);
+  const [simulcastDef, setSimulcastDef] = useState([]);
 
   const [simulcastLayers, setSimulcastLayers] = useState([]);
 
@@ -83,30 +79,12 @@ export function usePublisher() {
     if (publisherRef.current) {
       try {
         const stats = await publisherRef.current.getRtcStatsReport();
-
-        setStats(stats);
         setSimulcastLayers([]);
+        setSimulcastDef([]);
+        setRtt([]);
         stats[0].rtcStatsReport.forEach((e) => {
-          //if I uncomment the first if statement and I add the successfulRmote and successfuLocal to
-          //the array of dependencies, there will be a problem with renders
-          // if (e.type === 'candidate-pair') {
-          //   if (e.state === 'succeeded') {
-          //     setSuccessfulLocalCandidate(e.localCandidateId);
-          //     setSuccessfulRemoteCandidate(e.remoteCandidateId);
-          //   }
-          // }
-          // if (
-          //   e.type === 'remote-candidate' &&
-          //   successfulRemoteCandidate === e.id
-          // ) {
-          //   // if (successfulRemoteCandidate === e.id) {
-          //   setIp({ ip: e.ip, type: 'direct' });
-          //   // }
-          // }
           if (e.type === 'local-candidate') {
             if (e.networkType === 'vpn') setHasVPN(true);
-            // if (successfulLocalCandidate === e.id) {
-            // if (successfulLocalCandidate === e.id) {
             setConnectionType(e.networkType);
             if (e.candidateType === 'relay') {
               setProtocol(`TURN ${e.relayProtocol}`);
@@ -114,8 +92,6 @@ export function usePublisher() {
             } else {
               setProtocol(e.protocol);
             }
-            // }
-            // }
           }
 
           if (e.type === 'transport') {
@@ -123,16 +99,19 @@ export function usePublisher() {
           }
           if (e.type === 'remote-inbound-rtp' && e.kind === 'video') {
             setJitterVideo(e.jitter);
-            const rtt = !isNaN(e.roundTripTime) ? e.roundTripTime : 0;
-            setRtt(rtt);
+            // const rtt = !isNaN(e.roundTripTime) ? e.roundTripTime : 0;
+            const rttObject = {
+              ssrc: e.ssrc,
+              rtt: e.roundTripTime,
+              jitter: e.jitter,
+              packetLost: e.fractionLost,
+            };
+            setRtt((rtt) => [...rtt, rttObject]);
           }
           if (e.type === 'inbound-rtp' && e.kind === 'video') {
             setJitterVideo(e.jitter);
-            const rtt = !isNaN(e.roundTripTime) ? e.roundTripTime : 0;
-            setRtt(rtt);
           }
           if (e.type === 'remote-inbound-rtp' && e.kind === 'audio') {
-            console.log(e.jitter);
             setJitterAudio(e.jitter);
             setAudioPacketsLost(e.fractionLost);
           }
@@ -144,10 +123,6 @@ export function usePublisher() {
             e.frameWidth &&
             e.bytesSent
           ) {
-            // console.log(prevBytesSent.current[e.ssrc]);
-            // console.log(prevTimeStamp.current[e.ssrc]);
-            // console.log(e.timestamp - prevTimeStamp.current[e.ssrc]);
-            // console.log(prevTimeStamp);
             if (
               prevTimeStamp.current[e.ssrc] &&
               prevBytesSent.current[e.ssrc]
@@ -155,11 +130,7 @@ export function usePublisher() {
               const timedif = e.timestamp - prevTimeStamp.current[e.ssrc];
               const bytesDif = e.bytesSent - prevBytesSent.current[e.ssrc];
               const bitSec = (8 * bytesDif) / timedif;
-              // / timedif;
-              // console.log(bitSec);
-              // console.log(`(${8} * ${bytesDif}) / ${timedif}`);
 
-              // console.log(e.timestamp);
               const newLayers = {
                 width: e.frameWidth,
                 height: e.frameHeight,
@@ -167,6 +138,7 @@ export function usePublisher() {
                 qualityLimitationReason: e.qualityLimitationReason,
                 id: e.ssrc,
                 bytes: bitSec,
+                // rtt: result?.rtt ? result.rtt : 0,
               };
 
               // if (e.frameHeight && e.frameWidth) {
@@ -189,6 +161,25 @@ export function usePublisher() {
       }
     }
   }, []);
+
+  useEffect(() => {
+    if (rtt && simulcastLayers.length) {
+      // console.log(simulcastDef);
+      for (let layer of simulcastLayers) {
+        for (let rttLayer of rtt) {
+          if (layer.id === rttLayer.ssrc) {
+            const obj = Object.assign(layer, {
+              rtt: rttLayer.rtt,
+              jitter: rttLayer.jitter,
+              packetLost: rttLayer.packetLost,
+            });
+            // setSimulcastLayers(prev=>[])
+            setSimulcastDef((simulcastDef) => [...simulcastDef, obj]);
+          }
+        }
+      }
+    }
+  }, [rtt, simulcastLayers]);
 
   const destroyPublisher = useCallback(() => {
     if (!publisherRef.current) {
@@ -258,7 +249,8 @@ export function usePublisher() {
     simulcastLayers,
     jitterVideo,
     jitterAudio,
-    rtt,
+    // rtt,
+    simulcastDef,
     audioPacketsLost,
   };
 }

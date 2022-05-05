@@ -1,10 +1,18 @@
 .App {
-  text-align: center;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  width: 100vw;
   height: 100vh;
+  overflow: hidden;
 }
 
 * {
   margin: 0;
+}
+
+.main {
+  display: flex;
+  flex: 1 1;
+  overflow: hidden;
+  padding: 8px;
 }

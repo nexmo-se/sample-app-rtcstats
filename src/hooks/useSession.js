@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import OT from '@opentok/client';
+import LM from 'opentok-layout-js';
 
 export function useSession({ container }) {
   const [connected, setConnected] = useState(false);
@@ -14,6 +15,9 @@ export function useSession({ container }) {
   let prevBytes = useRef(null);
   const [subscriberFps, setSubscriberFps] = useState(null);
   const [subscriberRes, setSubscriberRes] = useState(null);
+  const layout = useRef(null);
+  const resizeTimeout = useRef(null);
+  const [haveSubscriberStats, setHaveSubscriberStats] = useState(false);
 
   const removeStream = ({ stream }) => {
     setStreams((prev) =>
@@ -48,12 +52,15 @@ export function useSession({ container }) {
   const onStreamCreated = useCallback(
     (event) => {
       subscribe(event.stream);
+      layout.current.layout();
       addStream({ stream: event.stream });
     },
     [subscribe]
   );
 
   const onStreamDestroyed = useCallback((event) => {
+    layout.current.layout();
+    setSubscriber(null);
     removeStream({ stream: event.stream });
   }, []);
 
@@ -62,6 +69,7 @@ export function useSession({ container }) {
       try {
         const stats = await subscriber.getRtcStatsReport();
         console.log(stats);
+        setHaveSubscriberStats(true);
 
         // setStats(stats);
 
@@ -87,10 +95,37 @@ export function useSession({ container }) {
           }
         });
       } catch (e) {
+        setHaveSubscriberStats(false);
         console.log('[useRtcStats] -  error:', e);
       }
     }
   }, [subscriber]);
+
+  React.useEffect(() => {
+    if (container.current) {
+      const element = document.getElementById(container.current.id);
+      if (element) {
+        layout.current = LM(element, {
+          // fixedRatio: true,
+          // bigFirst: false,
+          bigFixedRatio: true,
+          maxRatio: 3 / 2,
+          minRatio: 9 / 16,
+          bigAlignItems: 'left',
+          ignoreClass: 'OT_ignore',
+        });
+
+        layout.current.layout();
+
+        window.onresize = function () {
+          clearTimeout(resizeTimeout);
+          resizeTimeout.current = setTimeout(function () {
+            layout.current.layout();
+          }, 20);
+        };
+      }
+    }
+  }, [container]);
 
   React.useEffect(() => {
     console.log('useEffect hook ran');
@@ -171,5 +206,6 @@ export function useSession({ container }) {
     bytesReceived,
     subscriberFps,
     subscriberRes,
+    haveSubscriberStats,
   };
 }
