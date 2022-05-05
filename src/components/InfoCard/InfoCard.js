@@ -36,6 +36,7 @@ export default function InfoCard({
   subscriberFps,
   simulcastDef,
   haveSubscriberStats,
+  subscriberPacketLost,
 }) {
   const classes = styles();
   return (
@@ -182,6 +183,17 @@ export default function InfoCard({
             Download BW (Kbps) : {bytesReceived}
           </Typography>
         )}
+        {subscriberPacketLost && haveSubscriberStats && (
+          <Typography
+            sx={{ fontSize: 14 }}
+            component="div"
+            color="text.secondary"
+            gutterBottom
+          >
+            Packet Lost (%) : {subscriberPacketLost}
+          </Typography>
+        )}
+        subscriberPacketLost
       </CardContent>
     </Card>
   );

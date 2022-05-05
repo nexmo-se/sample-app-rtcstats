@@ -20,6 +20,7 @@ const Video = () => {
     subscriberFps,
     subscriberRes,
     haveSubscriberStats,
+    subscriberPacketLost,
   } = useSession({
     container: videoContainer,
   });
@@ -107,6 +108,7 @@ const Video = () => {
               subscriberRes={subscriberRes}
               simulcastDef={simulcastDef}
               haveSubscriberStats={haveSubscriberStats}
+              subscriberPacketLost={subscriberPacketLost}
             />
           )}
         </div>

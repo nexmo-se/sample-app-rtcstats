@@ -15,6 +15,7 @@ export function useSession({ container }) {
   let prevBytes = useRef(null);
   const [subscriberFps, setSubscriberFps] = useState(null);
   const [subscriberRes, setSubscriberRes] = useState(null);
+  const [subscriberPacketLost, setSubscriberPacketLost] = useState(null);
   const layout = useRef(null);
   const resizeTimeout = useRef(null);
   const [haveSubscriberStats, setHaveSubscriberStats] = useState(false);
@@ -81,6 +82,7 @@ export function useSession({ container }) {
             // prevTimeStamp.current &&
             // prevBytes.current
           ) {
+            setSubscriberPacketLost(e.fractionLost);
             setSubscriberFps(e.framesPerSecond);
             setSubscriberRes(`${e.frameWidth}X${e.frameHeight}`);
             if (prevTimeStamp.current && prevBytes.current) {
@@ -207,5 +209,6 @@ export function useSession({ container }) {
     subscriberFps,
     subscriberRes,
     haveSubscriberStats,
+    subscriberPacketLost,
   };
 }
