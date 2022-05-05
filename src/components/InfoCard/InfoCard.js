@@ -183,7 +183,7 @@ export default function InfoCard({
             Download BW (Kbps) : {bytesReceived}
           </Typography>
         )}
-        {subscriberPacketLost && haveSubscriberStats && (
+        {haveSubscriberStats && (
           <Typography
             sx={{ fontSize: 14 }}
             component="div"
@@ -193,7 +193,6 @@ export default function InfoCard({
             Packet Lost (%) : {subscriberPacketLost}
           </Typography>
         )}
-        subscriberPacketLost
       </CardContent>
     </Card>
   );

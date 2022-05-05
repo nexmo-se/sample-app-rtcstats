@@ -46,6 +46,7 @@ export function usePublisher() {
       const finalPublisherOptions = Object.assign({}, publisherOptions, {
         insertMode: 'append',
         width: 680,
+        publishAudio: false,
         // resolution: '1280x720',
         height: 640,
         style: {
@@ -104,7 +105,7 @@ export function usePublisher() {
               ssrc: e.ssrc,
               rtt: e.roundTripTime,
               jitter: e.jitter,
-              packetLost: e.fractionLost,
+              packetLost: e.fractionLost * 100,
             };
             setRtt((rtt) => [...rtt, rttObject]);
           }

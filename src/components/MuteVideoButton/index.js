@@ -12,7 +12,7 @@ export default function MuteVideoButton({
   handleVideoChange,
 }) {
   const title = hasVideo ? 'Disable Camera' : 'Enable Camera';
-  console.log('[MuteVideoButton] - hasVideo', hasVideo);
+  //   console.log('[MuteVideoButton] - hasVideo', hasVideo);
 
   return (
     <>

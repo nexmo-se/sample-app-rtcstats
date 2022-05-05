@@ -15,10 +15,13 @@ export function useSession({ container }) {
   let prevBytes = useRef(null);
   const [subscriberFps, setSubscriberFps] = useState(null);
   const [subscriberRes, setSubscriberRes] = useState(null);
-  const [subscriberPacketLost, setSubscriberPacketLost] = useState(null);
+  const [subscriberPacketLost, setSubscriberPacketLost] = useState(0);
   const layout = useRef(null);
   const resizeTimeout = useRef(null);
   const [haveSubscriberStats, setHaveSubscriberStats] = useState(false);
+
+  let prevPacketsReceived = useRef(null);
+  let prevPacketsLost = useRef(null);
 
   const removeStream = ({ stream }) => {
     setStreams((prev) =>
@@ -69,7 +72,7 @@ export function useSession({ container }) {
     if (subscriber) {
       try {
         const stats = await subscriber.getRtcStatsReport();
-        console.log(stats);
+        // console.log(stats);
         setHaveSubscriberStats(true);
 
         // setStats(stats);
@@ -82,17 +85,32 @@ export function useSession({ container }) {
             // prevTimeStamp.current &&
             // prevBytes.current
           ) {
-            setSubscriberPacketLost(e.fractionLost);
+            // setSubscriberPacketLost(e.fractionLost);
             setSubscriberFps(e.framesPerSecond);
             setSubscriberRes(`${e.frameWidth}X${e.frameHeight}`);
-            if (prevTimeStamp.current && prevBytes.current) {
+            if (
+              prevTimeStamp.current &&
+              prevBytes.current
+              //&&
+              // prevPacketsReceived.current &&
+              // prevPacketsLost.current
+            ) {
               const timeDiff = e.timestamp - prevTimeStamp.current;
               const bytesDiff = e.bytesReceived - prevBytes.current;
               const bitSec = (8 * bytesDiff) / timeDiff;
               setBytesReceived(bitSec);
+              const packetsDiff =
+                e.packetsReceived - prevPacketsReceived.current;
+              const packetsLost = e.packetsLost - prevPacketsLost.current;
+              const packetsTotal = packetsDiff + packetsLost;
+              console.log(packetsLost / packetsTotal);
+
+              setSubscriberPacketLost((packetsLost / packetsTotal) * 100);
             }
             prevTimeStamp.current = e.timestamp;
             prevBytes.current = e.bytesReceived;
+            prevPacketsReceived.current = e.packetsReceived;
+            prevPacketsLost.current = e.packetsLost;
             // console.log(bitSec);
           }
         });
