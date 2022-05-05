@@ -103,9 +103,10 @@ export function useSession({ container }) {
                 e.packetsReceived - prevPacketsReceived.current;
               const packetsLost = e.packetsLost - prevPacketsLost.current;
               const packetsTotal = packetsDiff + packetsLost;
-              console.log(packetsLost / packetsTotal);
 
-              setSubscriberPacketLost((packetsLost / packetsTotal) * 100);
+              if (packetsLost / packetsTotal > 0) {
+                setSubscriberPacketLost((packetsLost / packetsTotal) * 100);
+              }
             }
             prevTimeStamp.current = e.timestamp;
             prevBytes.current = e.bytesReceived;
