@@ -4,11 +4,11 @@ export default makeStyles((theme) => ({
     display: 'flex',
     justifyContent: 'center',
     width: '80vw',
-    height: '100vh',
+    height: '90vh',
   },
   container: {
     width: '80vw',
-    height: '100vh',
+    height: '90vh',
     display: 'flex',
     flexDirection: 'row',
   },
