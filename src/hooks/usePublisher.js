@@ -48,8 +48,8 @@ export function usePublisher() {
       const finalPublisherOptions = Object.assign({}, publisherOptions, {
         insertMode: 'append',
         width: 680,
-        publishAudio: false,
-        // resolution: '1280x720',
+        // publishAudio: false,
+        resolution: '1280x720',
         height: 640,
         style: {
           buttonDisplayMode: 'off',
@@ -186,19 +186,14 @@ export function usePublisher() {
             //   packetLost: packetLostValue * 100,
             // });
 
-            const obj =
-              // Object.assign(
-              //   {},
-              {
-                rtt: rttLayer.rtt,
-                jitter: rttLayer.jitter,
-                // packetLostFraction: rttLayer.packetLostFraction,
-                packetLost: packetLostValue * 100,
-                ...layer,
-              };
-            // );
+            const obj = {
+              rtt: rttLayer.rtt,
+              jitter: rttLayer.jitter,
+              // packetLostFraction: rttLayer.packetLostFraction,
+              packetLost: packetLostValue * 100,
+              ...layer,
+            };
 
-            // setSimulcastLayers(prev=>[])
             setSimulcastDef((simulcastDef) => [...simulcastDef, obj]);
           }
         }
@@ -271,8 +266,6 @@ export function usePublisher() {
     connectionType,
     srtpCipher,
     hasVPN,
-    simulcastLayers,
-    jitterVideo,
     jitterAudio,
     // rtt,
     simulcastDef,

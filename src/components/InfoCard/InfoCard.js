@@ -25,10 +25,9 @@ export default function InfoCard({
   ip,
   protocol,
   srtpCipher,
-  hasVPN,
+
   simulcastLayers,
   jitterAudio,
-  jitterVideo,
   rtt,
   audioPacketsLost,
   bytesReceived,
@@ -43,7 +42,7 @@ export default function InfoCard({
     <Card sx={{ maxHeight: 750 }}>
       <CardContent className={classes.root} component="div">
         <Typography
-          sx={{ fontSize: 18 }}
+          sx={{ fontSize: 14 }}
           component="h1"
           color="text.primary"
           gutterBottom
@@ -51,7 +50,7 @@ export default function InfoCard({
           Publisher stats
         </Typography>
         <Typography
-          sx={{ fontSize: 14 }}
+          sx={{ fontSize: 12 }}
           component="div"
           color="text.secondary"
           gutterBottom
@@ -59,7 +58,7 @@ export default function InfoCard({
           Connection type : {connectionType.toUpperCase()}
         </Typography>
         <Typography
-          sx={{ fontSize: 14 }}
+          sx={{ fontSize: 12 }}
           component="div"
           color="text.secondary"
           gutterBottom
@@ -67,7 +66,7 @@ export default function InfoCard({
           Protocol : {protocol.toUpperCase()}
         </Typography>
         <Typography
-          sx={{ fontSize: 14 }}
+          sx={{ fontSize: 12 }}
           component="div"
           color="text.secondary"
           gutterBottom
@@ -75,7 +74,7 @@ export default function InfoCard({
           Jitter Audio : {jitterAudio?.toFixed(4)}
         </Typography>
         <Typography
-          sx={{ fontSize: 14 }}
+          sx={{ fontSize: 12 }}
           component="div"
           color="text.secondary"
           gutterBottom
@@ -103,15 +102,7 @@ export default function InfoCard({
           Protocol : {protocol.toUpperCase()}
         </Typography>
         
-        {hasVPN && (
-          <Typography
-            sx={{ fontSize: 14 }}
-            component="div"
-            color="text.secondary"
-            gutterBottom
-          >
-            VPN : {hasVPN ? 'Yes' : 'No'}
-          </Typography> */}
+        
         {/* )} */}
         {/* <Typography
           sx={{ fontSize: 14 }}
@@ -121,11 +112,12 @@ export default function InfoCard({
         >
           SRTP Cipher : {srtpCipher}
         </Typography> */}
+
         {simulcastDef &&
           simulcastDef.map((e, index) => (
             <Typography
               key={index}
-              sx={{ fontSize: 14 }}
+              sx={{ fontSize: 12 }}
               component="div"
               color="text.secondary"
               gutterBottom
@@ -146,7 +138,7 @@ export default function InfoCard({
           ))}
         {haveSubscriberStats && (
           <Typography
-            sx={{ fontSize: 18 }}
+            sx={{ fontSize: 14 }}
             component="h1"
             color="text.primary"
             gutterBottom
@@ -156,7 +148,7 @@ export default function InfoCard({
         )}
         {subscriberFps && haveSubscriberStats && (
           <Typography
-            sx={{ fontSize: 14 }}
+            sx={{ fontSize: 12 }}
             component="div"
             color="text.secondary"
             gutterBottom
@@ -166,7 +158,7 @@ export default function InfoCard({
         )}
         {subscriberRes && haveSubscriberStats && (
           <Typography
-            sx={{ fontSize: 14 }}
+            sx={{ fontSize: 12 }}
             component="div"
             color="text.secondary"
             gutterBottom
@@ -176,7 +168,7 @@ export default function InfoCard({
         )}
         {bytesReceived && haveSubscriberStats && (
           <Typography
-            sx={{ fontSize: 14 }}
+            sx={{ fontSize: 12 }}
             component="div"
             color="text.secondary"
             gutterBottom
@@ -186,7 +178,7 @@ export default function InfoCard({
         )}
         {haveSubscriberStats && (
           <Typography
-            sx={{ fontSize: 14 }}
+            sx={{ fontSize: 12 }}
             component="div"
             color="text.secondary"
             gutterBottom

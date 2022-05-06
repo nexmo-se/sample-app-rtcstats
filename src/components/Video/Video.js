@@ -33,9 +33,7 @@ const Video = () => {
     connectionType,
     protocol,
     srtpCipher,
-    simulcastLayers,
     jitterAudio,
-    jitterVideo,
     rtt,
     audioPacketsLost,
     simulcastDef,
@@ -97,10 +95,9 @@ const Video = () => {
               protocol={protocol}
               ip={ip}
               connectionType={connectionType}
-              // hasVPN={hasVPN}
-              simulcastLayers={simulcastLayers}
+              // simulcastLayers={simulcastLayers}
               jitterAudio={jitterAudio}
-              jitterVideo={jitterVideo}
+              // jitterVideo={jitterVideo}
               rtt={rtt}
               audioPacketsLost={audioPacketsLost}
               bytesReceived={bytesReceived}
