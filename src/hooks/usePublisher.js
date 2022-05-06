@@ -108,7 +108,7 @@ export function usePublisher() {
               rtt: e.roundTripTime,
               jitter: e.jitter,
               packetLostFraction: e.fractionLost * 100,
-              packetsDiff: e.packetsLost - prevPacketsLost.current[e.ssrc],
+              packetsLostDiff: e.packetsLost - prevPacketsLost.current[e.ssrc],
             };
             setRtt((rtt) => [...rtt, rttObject]);
             prevPacketsLost.current[e.ssrc] = e.packetsLost;
@@ -175,13 +175,13 @@ export function usePublisher() {
       for (let layer of simulcastLayers) {
         for (let rttLayer of rtt) {
           if (layer.id === rttLayer.ssrc) {
-            const packetsTotal = layer.packetsDiff + rttLayer.packetsDiff;
-            const packetLostValue = rttLayer.packetsDiff / layer.packetsDiff;
+            const packetsTotal = layer.packetsLostDiff + rttLayer.packetsDiff;
+            const packetLostValue = rttLayer.packetsDiff / packetsTotal;
             console.log(packetsTotal, packetLostValue);
             const obj = Object.assign(layer, {
               rtt: rttLayer.rtt,
               jitter: rttLayer.jitter,
-              // packetLostFraction: rttLayer.packetLostFraction,
+              packetLostFraction: rttLayer.packetLostFraction,
               packetLost: packetLostValue * 100,
             });
             // setSimulcastLayers(prev=>[])
