@@ -121,8 +121,8 @@ export default function InfoCard({
         >
           SRTP Cipher : {srtpCipher}
         </Typography> */}
-        {simulcastLayers &&
-          simulcastLayers.map((e, index) => (
+        {simulcastDef &&
+          simulcastDef.map((e, index) => (
             <Typography
               key={index}
               sx={{ fontSize: 14 }}
@@ -137,7 +137,7 @@ export default function InfoCard({
                 <li>FPS: {e.framesPerSecond}</li>
                 <li>Bitrate Kbps: {Math.round(e.bytes)}</li>
                 <li>Packet Lost (%): {e.packetLost}</li>
-                <li>Packet Lost Fr(%): {e.packetLostFraction}</li>
+                {/* <li>Packet Lost Fr(%): {e.packetLostFraction}</li> */}
                 <li>Rtt: {e.rtt}</li>
                 <li>Jitter: {e.jitter?.toFixed(4)}</li>
               </ul>

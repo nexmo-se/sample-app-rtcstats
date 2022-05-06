@@ -83,7 +83,7 @@ export function usePublisher() {
       try {
         const stats = await publisherRef.current.getRtcStatsReport();
         setSimulcastLayers([]);
-        setSimulcastDef([]);
+
         setRtt([]);
         stats[0].rtcStatsReport.forEach((e) => {
           if (e.type === 'local-candidate') {
@@ -171,6 +171,7 @@ export function usePublisher() {
 
   useEffect(() => {
     if (rtt && simulcastLayers.length) {
+      setSimulcastDef([]);
       // console.log(simulcastDef);
       for (let layer of simulcastLayers) {
         for (let rttLayer of rtt) {
@@ -178,12 +179,25 @@ export function usePublisher() {
             const packetsTotal = layer.packetsDiff + rttLayer.packetsLostDiff;
             const packetLostValue = rttLayer.packetsLostDiff / packetsTotal;
 
-            const obj = Object.assign(layer, {
-              rtt: rttLayer.rtt,
-              jitter: rttLayer.jitter,
-              packetLostFraction: rttLayer.packetLostFraction,
-              packetLost: packetLostValue * 100,
-            });
+            // const obj = Object.assign(layer, {
+            //   rtt: rttLayer.rtt,
+            //   jitter: rttLayer.jitter,
+            //   packetLostFraction: rttLayer.packetLostFraction,
+            //   packetLost: packetLostValue * 100,
+            // });
+
+            const obj =
+              // Object.assign(
+              //   {},
+              {
+                rtt: rttLayer.rtt,
+                jitter: rttLayer.jitter,
+                // packetLostFraction: rttLayer.packetLostFraction,
+                packetLost: packetLostValue * 100,
+                ...layer,
+              };
+            // );
+
             // setSimulcastLayers(prev=>[])
             setSimulcastDef((simulcastDef) => [...simulcastDef, obj]);
           }
