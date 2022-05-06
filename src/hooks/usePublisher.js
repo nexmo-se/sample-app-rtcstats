@@ -175,9 +175,9 @@ export function usePublisher() {
       for (let layer of simulcastLayers) {
         for (let rttLayer of rtt) {
           if (layer.id === rttLayer.ssrc) {
-            const packetsTotal = layer.packetsLostDiff + rttLayer.packetsDiff;
-            const packetLostValue = rttLayer.packetsDiff / packetsTotal;
-            console.log(packetsTotal, packetLostValue);
+            const packetsTotal = layer.packetsDiff + rttLayer.packetsLostDiff;
+            const packetLostValue = rttLayer.packetsLostDiff / packetsTotal;
+
             const obj = Object.assign(layer, {
               rtt: rttLayer.rtt,
               jitter: rttLayer.jitter,
