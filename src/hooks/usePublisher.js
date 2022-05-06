@@ -12,6 +12,8 @@ export function usePublisher() {
   const [protocol, setProtocol] = useState(null);
   const [srtpCipher, setSrtpCipher] = useState(null);
   let prevTimeStamp = useRef({});
+  let prevPacketsSent = useRef({});
+  let prevPacketsLost = useRef({});
 
   let prevBytesSent = useRef({});
   const [jitterAudio, setJitterAudio] = useState(null);
@@ -105,9 +107,11 @@ export function usePublisher() {
               ssrc: e.ssrc,
               rtt: e.roundTripTime,
               jitter: e.jitter,
-              packetLost: e.fractionLost * 100,
+              packetLostFraction: e.fractionLost * 100,
+              packetsDiff: e.packetsLost - prevPacketsLost.current[e.ssrc],
             };
             setRtt((rtt) => [...rtt, rttObject]);
+            prevPacketsLost.current[e.ssrc] = e.packetsLost;
           }
           if (e.type === 'inbound-rtp' && e.kind === 'video') {
             setJitterVideo(e.jitter);
@@ -139,6 +143,7 @@ export function usePublisher() {
                 qualityLimitationReason: e.qualityLimitationReason,
                 id: e.ssrc,
                 bytes: bitSec,
+                packetsDiff: e.packetsSent - prevPacketsSent.current[e.ssrc],
                 // rtt: result?.rtt ? result.rtt : 0,
               };
 
@@ -150,6 +155,7 @@ export function usePublisher() {
             }
             prevTimeStamp.current[e.ssrc] = e.timestamp;
             prevBytesSent.current[e.ssrc] = e.bytesSent;
+            prevPacketsSent.current[e.ssrc] = e.packetsSent;
           }
 
           // prevTimeStamp[e.ssrc] = e.timestamp;
@@ -169,10 +175,14 @@ export function usePublisher() {
       for (let layer of simulcastLayers) {
         for (let rttLayer of rtt) {
           if (layer.id === rttLayer.ssrc) {
+            const packetsTotal = layer.packetsDiff + rttLayer.packetsDiff;
+            const packetLostValue = rttLayer.packetsDiff / layer.packetsDiff;
+            console.log(packetsTotal, packetLostValue);
             const obj = Object.assign(layer, {
               rtt: rttLayer.rtt,
               jitter: rttLayer.jitter,
-              packetLost: rttLayer.packetLost,
+              // packetLostFraction: rttLayer.packetLostFraction,
+              packetLost: packetLostValue * 100,
             });
             // setSimulcastLayers(prev=>[])
             setSimulcastDef((simulcastDef) => [...simulcastDef, obj]);
