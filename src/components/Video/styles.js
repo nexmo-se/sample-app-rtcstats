@@ -3,17 +3,17 @@ export default makeStyles((theme) => ({
   streams: {
     display: 'flex',
     justifyContent: 'center',
-    width: '80vw',
+    width: '75vw',
     height: '90vh',
   },
   container: {
-    width: '80vw',
+    width: '75vw',
     height: '90vh',
     display: 'flex',
     flexDirection: 'row',
   },
   infoCard: {
-    width: '15vw',
+    width: '20vw',
     height: '100vh',
     // position: 'absolute',
     // right: '0',
