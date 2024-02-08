@@ -12,10 +12,7 @@ import { useEffect, useState } from 'react';
 import { getIpInfo, reverseLookup } from '../../api/ipData';
 
 const bull = (
-  <Box
-    component="span"
-    sx={{ display: 'inline-block', mx: '2px', transform: 'scale(0.8)' }}
-  >
+  <Box component="span" sx={{ display: 'inline-block', mx: '2px', transform: 'scale(0.8)' }}>
     •
   </Box>
 );
@@ -41,44 +38,19 @@ export default function InfoCard({
   return (
     <Card sx={{ maxHeight: 750 }}>
       <CardContent className={classes.root} component="div">
-        <Typography
-          sx={{ fontSize: 14 }}
-          component="h1"
-          color="text.primary"
-          gutterBottom
-        >
+        <Typography sx={{ fontSize: 14 }} component="h1" color="text.primary" gutterBottom>
           Publisher stats
         </Typography>
-        <Typography
-          sx={{ fontSize: 12 }}
-          component="div"
-          color="text.secondary"
-          gutterBottom
-        >
+        <Typography sx={{ fontSize: 12 }} component="div" color="text.secondary" gutterBottom>
           Connection type : {connectionType.toUpperCase()}
         </Typography>
-        <Typography
-          sx={{ fontSize: 12 }}
-          component="div"
-          color="text.secondary"
-          gutterBottom
-        >
+        <Typography sx={{ fontSize: 12 }} component="div" color="text.secondary" gutterBottom>
           Protocol : {protocol.toUpperCase()}
         </Typography>
-        <Typography
-          sx={{ fontSize: 12 }}
-          component="div"
-          color="text.secondary"
-          gutterBottom
-        >
+        <Typography sx={{ fontSize: 12 }} component="div" color="text.secondary" gutterBottom>
           Jitter Audio : {jitterAudio?.toFixed(4)}
         </Typography>
-        <Typography
-          sx={{ fontSize: 12 }}
-          component="div"
-          color="text.secondary"
-          gutterBottom
-        >
+        <Typography sx={{ fontSize: 12 }} component="div" color="text.secondary" gutterBottom>
           Audio Packet Lost : {`${audioPacketsLost * 100} %`}
         </Typography>
         {/* {ipData && (
@@ -115,14 +87,8 @@ export default function InfoCard({
 
         {simulcastDef &&
           simulcastDef.map((e, index) => (
-            <Typography
-              key={index}
-              sx={{ fontSize: 12 }}
-              component="div"
-              color="text.secondary"
-              gutterBottom
-            >
-              Simulcast Layer
+            <Typography key={index} sx={{ fontSize: 12 }} component="div" color="text.secondary" gutterBottom>
+              Quality Layer
               <ul>
                 <li>Resolution : {`${e.width}x${e.height}`}</li>
                 <li>Quality limitation : {e.qualityLimitationReason}</li>
@@ -137,52 +103,27 @@ export default function InfoCard({
             </Typography>
           ))}
         {haveSubscriberStats && (
-          <Typography
-            sx={{ fontSize: 14 }}
-            component="h1"
-            color="text.primary"
-            gutterBottom
-          >
+          <Typography sx={{ fontSize: 14 }} component="h1" color="text.primary" gutterBottom>
             Subscriber stats
           </Typography>
         )}
         {subscriberFps && haveSubscriberStats && (
-          <Typography
-            sx={{ fontSize: 12 }}
-            component="div"
-            color="text.secondary"
-            gutterBottom
-          >
+          <Typography sx={{ fontSize: 12 }} component="div" color="text.secondary" gutterBottom>
             Subscriber FPS : {subscriberFps}
           </Typography>
         )}
         {subscriberRes && haveSubscriberStats && (
-          <Typography
-            sx={{ fontSize: 12 }}
-            component="div"
-            color="text.secondary"
-            gutterBottom
-          >
+          <Typography sx={{ fontSize: 12 }} component="div" color="text.secondary" gutterBottom>
             Subscriber Resolution : {subscriberRes}
           </Typography>
         )}
         {bytesReceived && haveSubscriberStats && (
-          <Typography
-            sx={{ fontSize: 12 }}
-            component="div"
-            color="text.secondary"
-            gutterBottom
-          >
+          <Typography sx={{ fontSize: 12 }} component="div" color="text.secondary" gutterBottom>
             Download BW (Kbps) : {bytesReceived}
           </Typography>
         )}
         {haveSubscriberStats && (
-          <Typography
-            sx={{ fontSize: 12 }}
-            component="div"
-            color="text.secondary"
-            gutterBottom
-          >
+          <Typography sx={{ fontSize: 12 }} component="div" color="text.secondary" gutterBottom>
             Packet Lost (%) : {subscriberPacketLost}
           </Typography>
         )}

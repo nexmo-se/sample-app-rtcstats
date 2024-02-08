@@ -49,7 +49,7 @@ export function usePublisher() {
         insertMode: 'append',
         width: 680,
         // publishAudio: false,
-        resolution: '1280x720',
+        resolution: '640x480',
         height: 640,
         style: {
           buttonDisplayMode: 'off',
@@ -58,17 +58,13 @@ export function usePublisher() {
         showControls: false,
       });
       console.log('usePublisher finalPublisherOptions', finalPublisherOptions);
-      publisherRef.current = OT.initPublisher(
-        containerId,
-        finalPublisherOptions,
-        (err) => {
-          if (err) {
-            console.log('[usePublisher]', err);
-            publisherRef.current = null;
-          }
-          console.log('Publisher Created');
+      publisherRef.current = OT.initPublisher(containerId, finalPublisherOptions, (err) => {
+        if (err) {
+          console.log('[usePublisher]', err);
+          publisherRef.current = null;
         }
-      );
+        console.log('Publisher Created');
+      });
 
       setPubInitialised(true);
 
@@ -121,17 +117,8 @@ export function usePublisher() {
             setAudioPacketsLost(e.fractionLost);
           }
 
-          if (
-            e.type === 'outbound-rtp' &&
-            e.kind === 'video' &&
-            e.frameHeight &&
-            e.frameWidth &&
-            e.bytesSent
-          ) {
-            if (
-              prevTimeStamp.current[e.ssrc] &&
-              prevBytesSent.current[e.ssrc]
-            ) {
+          if (e.type === 'outbound-rtp' && e.kind === 'video' && e.frameHeight && e.frameWidth && e.bytesSent) {
+            if (prevTimeStamp.current[e.ssrc] && prevBytesSent.current[e.ssrc]) {
               const timedif = e.timestamp - prevTimeStamp.current[e.ssrc];
               const bytesDif = e.bytesSent - prevBytesSent.current[e.ssrc];
               const bitSec = (8 * bytesDif) / timedif;
@@ -148,10 +135,7 @@ export function usePublisher() {
               };
 
               // if (e.frameHeight && e.frameWidth) {
-              setSimulcastLayers((simulcastLayers) => [
-                ...simulcastLayers,
-                newLayers,
-              ]);
+              setSimulcastLayers((simulcastLayers) => [...simulcastLayers, newLayers]);
             }
             prevTimeStamp.current[e.ssrc] = e.timestamp;
             prevBytesSent.current[e.ssrc] = e.bytesSent;
