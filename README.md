@@ -5,3 +5,10 @@ This is a simple application that demonstrates how to get some webRTC details su
 ## Requirements
 
 Node JS version 16
+
+## How to run the app
+
+1. Populate `config.js` with test credentials
+2. Run `npm install`
+3. Run `npm start`
+4. Join in two different tabs to see statistics.
